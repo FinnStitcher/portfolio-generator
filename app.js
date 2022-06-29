@@ -1,21 +1,45 @@
 const inquirer = require('inquirer');
 
+const inputError = input => {
+    if (input) {
+        return true;
+    } else {
+        console.log("This information is required.");
+        return false;
+    }
+}
+
 const promptUser = () => {
     return inquirer.prompt([
         {
             type: 'input',
             name: 'name',
-            message: 'What is your name?'
+            message: 'What is your name?',
+            validate: input => inputError(input)
         },
         {
             type: 'input',
             name: 'github',
-            message: 'What is your GitHub username?'
+            message: 'What is your GitHub username?',
+            validate: input => inputError(input)
+        },
+        {
+            type: "confirm",
+            name: "confirmAbout",
+            message: 'Would you like to enter some information for an "About" section?',
+            default: true
         },
         {
             type: 'input',
             name: 'about',
-            message: 'Provide some information about yourself:'
+            message: 'Provide some information about yourself:',
+            when: ({confirmAbout}) => {
+                if (confirmAbout) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
     ]);
 };
@@ -40,12 +64,14 @@ const promptProject = (portfolioData) => {
         {
             type: 'input',
             name: 'name',
-            message: 'What is the name of your project?'
+            message: 'What is the name of your project?',
+            validate: input => inputError(input)
         },
         {
             type: 'input',
             name: 'description',
-            message: 'Provide a description of the project:'
+            message: 'Provide a description of the project:',
+            validate: input => inputError(input)
         },
         {
             type: 'checkbox',
@@ -56,7 +82,8 @@ const promptProject = (portfolioData) => {
         {
             type: 'input',
             name: 'link',
-            message: 'Enter the GitHub link to your project:'
+            message: 'Enter the GitHub link to your project:',
+            validate: input => inputError(input)
         },
         {
             type: 'confirm',
