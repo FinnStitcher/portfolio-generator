@@ -1,6 +1,6 @@
 const generateAbout = (aboutText) => {
 	if (!aboutText) {
-		return '';
+		return "";
 	}
 
 	return `
@@ -8,6 +8,62 @@ const generateAbout = (aboutText) => {
         <h2 class="text-dark bg-primary p-2 display-inline-block">About Me</h2>
         <p>${aboutText}</p>
     </section>`;
+};
+
+const generateProjects = (projectsArr) => {
+	// whoo, this one is gonna be weird :)
+
+	// first, make an array of html blocks for featured projects
+	// first, we destructure out the value of the feature property and return it
+	// this works because .filter needs to return true or false, and feature is already a boolean property
+	// then we can map
+	const featuredHtmlArr = projectsArr
+		.filter(({feature}) => feature)
+		.map(({name, description, languages, link}) => {
+			return `
+        <div class="col-12 mb-2 bg-dark text-light p-3 flex-column">
+            <h3 class="portfolio-item-title text-light">${name}</h3>
+            <h5 class="portfolio-languages">
+                Built With: ${languages.join(", ")}
+            </h5>
+            <p>${description}</p>
+            <a href="${link}" class="btn mt-auto"><i class="fab fa-github mr-2"></i> View Project on GitHub</a>
+        </div>
+        `;
+		});
+
+	// same goes for an array of non-featured projects
+	// here, we invert the boolean value of feature, so this .filter will return items that originally had false :)
+	const notFeaturedHtmlArr = projectsArr
+		.filter(({feature}) => !feature)
+		.map(({name, description, languages, link}) => {
+			return `
+        <div class="col-12 col-md-6 mb-2 bg-dark text-light p-3 flex-column">
+            <h3 class="portfolio-item-title text-light">${name}</h3>
+            <h5 class="portfolio-languages">
+                Built With: ${languages.join(", ")}
+            </h5>
+            <p>${description}</p>
+            <a href="${link}" class="btn mt-auto"><i class="fab fa-github mr-2"></i> View Project on GitHub</a>
+        </div>
+        `;
+		});
+
+	// array.map runs a function on every element of an array and makes a new array with the return values
+	// here, we're taking each project, destructuring out the properties, and returning an html block with those properties interpolated
+	// we can then feed that into the return below!
+    // theoretically, we could insert those method chains directly into that return, because .map returns a value, but i don't want to
+
+	return `
+    <section class="my-3" id="portfolio">
+        <h2 class="text-dark bg-primary p-2 display-inline-block">Work</h2>
+        <div class="flex-row justify-space-between">
+            ${featuredHtmlArr.join("")}
+            ${notFeaturedHtmlArr.join("")}
+        </div>
+    </section>
+    `;
+	// because we broke them into two arrays, we don't have to worry about sorting the list to get featured projects at the top! :)
 };
 
 const generatePage = (templateData) => {
@@ -42,6 +98,7 @@ const generatePage = (templateData) => {
 
         <main class="container my-5">
             ${generateAbout(about)}
+            ${generateProjects(projects)}
         </main>
 
         <footer class="container text-center py-3">
