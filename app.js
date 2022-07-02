@@ -48,6 +48,7 @@ const dummyData = {
 	],
 };
 
+// generic validation text
 const inputError = (input) => {
 	if (input) {
 		return true;
@@ -57,6 +58,7 @@ const inputError = (input) => {
 	}
 };
 
+// async
 const promptUser = () => {
 	return inquirer.prompt([
 		{
@@ -92,8 +94,8 @@ const promptUser = () => {
 		},
 	]);
 };
-// returns a promise
 
+// async
 const promptProject = (portfolioData) => {
 	// check if portfolioData contains a property called projects
 	if (!portfolioData.projects) {
@@ -171,10 +173,36 @@ const promptProject = (portfolioData) => {
 		});
 };
 
+// run promptUser
+promptUser(dummyData)
+    // then run promptProject with the returned data...
+	.then(promptProject)
+    /// then run generatePage with the returned data...
+	.then((portfolioData) => {
+		return generatePage(portfolioData);
+	})
+    // then run writeFile...
+	.then((pageHTML) => {
+		return writeFile(pageHTML);
+	})
+    // then log the response and run copyFile...
+	.then((writeFileResponse) => {
+		console.log(writeFileResponse);
+		return copyFile();
+	})
+    // then log that response...
+	.then((copyFileResponse) => {
+		console.log(copyFileResponse);
+	})
+    // and here, catch any errors
+	.catch((err) => {
+		console.log(err);
+	});
+
 // promptUser()
 //     .then(promptProject)
 //     .then(portfolioData => {
-//         const pageHTML = generatePage(dummyData);
+//         const pageHTML = generatePage(portfolioData);
 
 //         fs.writeFile('./index.html', pageHTML, err => {
 //             if (err) throw new Error(err);
@@ -187,18 +215,31 @@ const promptProject = (portfolioData) => {
 //         // callback function that will run when the file has been written - handling errors and successes
 //     });
 
-const dummyFunction = () => {
-	const pageHTML = generatePage(dummyData);
+// const dummyFunction = () => {
+// 	const pageHTML = generatePage(dummyData);
 
-	fs.writeFile("./index.html", pageHTML, (err) => {
-		if (err) throw new Error(err);
+// 	fs.writeFile("./dist/index.html", pageHTML, (err) => {
+// 		if (err) {
+//             console.log(err);
+//             return;
+//         }
+//         // here, return just shuts things down
 
-		console.log("Page created. Check out index.html to see the output.");
-	});
-	// three arguments:
-	// name of file being written
-	// data to be written to the file - here, that's the data returned from generatePage()
-	// callback function that will run when the file has been written - handling errors and successes
-};
+// 		console.log("Page created.");
 
-dummyFunction();
+//         fs.copyFile('./src/style.css', './dist/style.css', err => {
+//             if (err) {
+//                 console.log(err);
+//                 return;
+//             }
+
+//             console.log("Stylesheet copied.");
+//         })
+// 	});
+// 	// three arguments:
+// 	// name of file being written
+// 	// data to be written to the file - here, that's the data returned from generatePage()
+// 	// callback function that will run when the file has been written - handling errors and successes
+// };
+
+// dummyFunction();
