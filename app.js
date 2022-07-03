@@ -1,7 +1,7 @@
-const fs = require("fs");
 const inquirer = require("inquirer");
 
 const generatePage = require("./src/page-template.js");
+const { writeFile, copyFile } = require("./utils/generate-site.js");
 
 const dummyData = {
 	name: "Lernantino",
@@ -58,7 +58,6 @@ const inputError = (input) => {
 	}
 };
 
-// async
 const promptUser = () => {
 	return inquirer.prompt([
 		{
@@ -95,7 +94,6 @@ const promptUser = () => {
 	]);
 };
 
-// async
 const promptProject = (portfolioData) => {
 	// check if portfolioData contains a property called projects
 	if (!portfolioData.projects) {
@@ -179,6 +177,7 @@ promptUser(dummyData)
 	.then(promptProject)
     /// then run generatePage with the returned data...
 	.then((portfolioData) => {
+        console.log("Data received, generating page...");
 		return generatePage(portfolioData);
 	})
     // then run writeFile...
@@ -187,59 +186,14 @@ promptUser(dummyData)
 	})
     // then log the response and run copyFile...
 	.then((writeFileResponse) => {
-		console.log(writeFileResponse);
+		console.log(writeFileResponse.message);
 		return copyFile();
 	})
     // then log that response...
 	.then((copyFileResponse) => {
-		console.log(copyFileResponse);
+		console.log(copyFileResponse.message);
 	})
     // and here, catch any errors
 	.catch((err) => {
 		console.log(err);
 	});
-
-// promptUser()
-//     .then(promptProject)
-//     .then(portfolioData => {
-//         const pageHTML = generatePage(portfolioData);
-
-//         fs.writeFile('./index.html', pageHTML, err => {
-//             if (err) throw new Error(err);
-
-//             console.log("Page created. Check out index.html to see the output.")
-//         })
-//         // three arguments:
-//         // name of file being written
-//         // data to be written to the file - here, that's the data returned from generatePage()
-//         // callback function that will run when the file has been written - handling errors and successes
-//     });
-
-// const dummyFunction = () => {
-// 	const pageHTML = generatePage(dummyData);
-
-// 	fs.writeFile("./dist/index.html", pageHTML, (err) => {
-// 		if (err) {
-//             console.log(err);
-//             return;
-//         }
-//         // here, return just shuts things down
-
-// 		console.log("Page created.");
-
-//         fs.copyFile('./src/style.css', './dist/style.css', err => {
-//             if (err) {
-//                 console.log(err);
-//                 return;
-//             }
-
-//             console.log("Stylesheet copied.");
-//         })
-// 	});
-// 	// three arguments:
-// 	// name of file being written
-// 	// data to be written to the file - here, that's the data returned from generatePage()
-// 	// callback function that will run when the file has been written - handling errors and successes
-// };
-
-// dummyFunction();
